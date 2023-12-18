@@ -1,18 +1,37 @@
-import React from "react";
+import React, { Component } from "react";
 
-const Task = (props) => {
-  const { description, created } = props.taskData;
-  return (
-    <div className="view">
-      <input className="toggle" type="checkbox" />
-      <label>
-        <span className="description">{description}</span>
-        <span className="created">{created}</span>
-      </label>
-      <button className="icon icon-edit"></button>
-      <button className="icon icon-destroy"></button>
-    </div>
-  );
-};
+export default class Task extends Component {
+  state = {
+    completed: false,
+  };
 
-export default Task;
+  onMarkImportant = () => {
+    this.setState(({ completed }) => {
+      return {
+        completed: !completed,
+      };
+    });
+  };
+  render() {
+    const { label, created, onDelete } = this.props;
+    const { completed } = this.state;
+    let classNames = "";
+
+    if (completed) {
+      classNames += "completed";
+    }
+    return (
+      <li className={classNames} onClick={this.onMarkImportant}>
+        <div className="view">
+          <input className="toggle" type="checkbox" />
+          <label>
+            <span className="description">{label}</span>
+            <span className="created">{created}</span>
+          </label>
+          <button className="icon icon-edit"></button>
+          <button onClick={onDelete} className="icon icon-destroy"></button>
+        </div>
+      </li>
+    );
+  }
+}

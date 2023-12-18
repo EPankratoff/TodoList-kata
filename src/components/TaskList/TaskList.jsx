@@ -1,16 +1,15 @@
-import React from "react";
+import React, { Component } from "react";
 import Task from "./Task/Task";
 
-const TaskList = (props) => {
-  return (
-    <section className="main">
-      <ul className="todo-list">
-        <li className="completed">
-          <Task taskData={props.taskData} />
-        </li>
-      </ul>
-    </section>
-  );
-};
+export default class TaskList extends Component {
+  render() {
+    const { tasks, onDelete } = this.props;
 
-export default TaskList;
+    const elements = tasks.map((item) => {
+      const { id, ...itemProps } = item;
+
+      return <Task key={id} {...itemProps} onDelete={() => onDelete(id)} />;
+    });
+    return <ul className="todo-list">{elements}</ul>;
+  }
+}
