@@ -11,7 +11,7 @@ const TaskFilter = () => {
         <button>Active</button>
       </li>
       <li>
-        <button>Copleted</button>
+        <button>Completed</button>
       </li>
     </ul>
   );

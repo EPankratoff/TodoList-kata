@@ -1,15 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
 import Task from "./Task/Task";
 
-export default class TaskList extends Component {
-  render() {
-    const { tasks, onDelete } = this.props;
+const TaskList = ({ tasks, onDelete, onToggleCompleted }) => {
+  const elements = tasks.map((item) => {
+    const { id, ...itemProps } = item;
 
-    const elements = tasks.map((item) => {
-      const { id, ...itemProps } = item;
-
-      return <Task key={id} {...itemProps} onDelete={() => onDelete(id)} />;
-    });
-    return <ul className="todo-list">{elements}</ul>;
-  }
-}
+    return (
+      <Task
+        key={id}
+        {...itemProps}
+        onToggleCompleted={() => onToggleCompleted(id)}
+        onDelete={() => onDelete(id)}
+      />
+    );
+  });
+  return <ul className="todo-list">{elements}</ul>;
+};
+export default TaskList;
