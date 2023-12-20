@@ -12,6 +12,7 @@ export default class App extends Component {
       this.createTaskItem("Active task"),
       this.createTaskItem("Drink Coffee"),
     ],
+    filter: "All",
   };
 
   createTaskItem(label) {
@@ -21,6 +22,29 @@ export default class App extends Component {
       id: this.maxId++,
     };
   }
+
+  filter(items, filter) {
+    if (filter === "All") {
+      return items;
+    } else if (filter === "Active") {
+      return items.filter((el) => !el.completed);
+    } else if (filter === "Completed") {
+      return items.filter((el) => el.completed);
+    }
+  }
+
+  onFilterChange = (filter) => {
+    this.setState({ filter });
+  };
+
+  filteredItems = () => {
+    const { taskData, filter } = this.state;
+    return taskData.filter(({ completed }) => {
+      const all = filter === "All";
+      const compl = filter === "Completed";
+      return all ? true : compl ? completed === true : completed === false;
+    });
+  };
 
   addItem = (text) => {
     const newItem = this.createTaskItem(text);
@@ -48,12 +72,21 @@ export default class App extends Component {
     });
   };
 
-  toggleProperty(arr, id, propName) {
-    const indx = arr.findIndex((el) => el.id === id);
-    const oldItem = arr[indx];
-    const newItem = { ...oldItem, [propName]: !oldItem[propName] };
-    return [...arr.slice(0, indx), newItem, ...arr.slice(indx + 1)];
-  }
+  clearCompleted = () => {
+    this.setState(({ taskData }) => {
+      const newArray = taskData.filter((el) => !el.completed);
+      return {
+        taskData: newArray,
+      };
+    });
+  };
+
+  // toggleProperty(arr, id, propName) {
+  //   const indx = arr.findIndex((el) => el.id === id);
+  //   const oldItem = arr[indx];
+  //   const newItem = { ...oldItem, [propName]: !oldItem[propName] };
+  //   return [...arr.slice(0, indx), newItem, ...arr.slice(indx + 1)];
+  // }
 
   onToggleCompleted = (id) => {
     this.setState(({ taskData }) => {
@@ -65,24 +98,32 @@ export default class App extends Component {
       });
       return {
         taskData: updatedData,
+        tasks: this.filter(updatedData, this.state.filter),
       };
     });
   };
 
   render() {
-    const { taskData } = this.state;
+    const { taskData, filter } = this.state;
     const completedCount = taskData.filter((el) => el.completed).length;
+    // const filterItem = this.filter(taskData, filter);
+
     return (
       <div className="todoapp">
         <NewTaskForm onItemAdd={this.addItem} />
 
         <section className="main">
           <TaskList
-            tasks={taskData}
+            tasks={this.filteredItems()}
             onDelete={this.deleteItem}
             onToggleCompleted={this.onToggleCompleted}
           />
-          <Footer taskCount={completedCount} />
+          <Footer
+            filter={filter}
+            onFilterChange={this.onFilterChange}
+            taskCount={completedCount}
+            clearCompleted={this.clearCompleted}
+          />
         </section>
       </div>
     );

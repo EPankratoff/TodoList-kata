@@ -2,6 +2,7 @@ import React from "react";
 import Task from "./Task/Task";
 
 const TaskList = ({ tasks, onDelete, onToggleCompleted }) => {
+  // console.log("tasks", tasks);
   const elements = tasks.map((item) => {
     const { id, ...itemProps } = item;
 
