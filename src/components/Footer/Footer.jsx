@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./Footer.css";
 import TaskFilter from "./TaskFilter/TaskFilter";
+import PropTypes from "prop-types";
+
 export default class Footer extends Component {
   render() {
     const { taskCount, clearCompleted, filter, onFilterChange } = this.props;
@@ -22,4 +24,11 @@ Footer.defaultProps = {
   filter: "All",
   clearCompleted: () => {},
   onFilterChange: () => {},
+};
+
+Footer.propTypes = {
+  taskCount: PropTypes.number.isRequired,
+  filter: PropTypes.oneOf(["All", "Active", "Completed"]),
+  clearCompleted: PropTypes.func.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };
