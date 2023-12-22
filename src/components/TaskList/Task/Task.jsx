@@ -2,25 +2,77 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 
 export default class Task extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      editing: false,
+      value: props.label,
+    };
+
+    this.handleToggleEditing = this.handleToggleEditing.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleToggleEditing() {
+    this.setState((prevState) => ({
+      editing: !prevState.editing,
+    }));
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    const { editItem } = this.props;
+    editItem(this.state.value);
+    this.setState({ editing: false });
+  }
+
+  handleChange(event) {
+    this.setState({ value: event.target.value });
+  }
+
   render() {
     const { label, created, onDelete, onToggleCompleted, completed } =
       this.props;
-    let classNames = "";
+    const { editing, value } = this.state;
 
+    let classNames = "";
     if (completed) {
       classNames += "completed";
     }
+    if (editing) {
+      classNames += " editing";
+    }
+
     return (
-      <li className={classNames} onClick={onToggleCompleted}>
+      <li className={classNames}>
         <div className="view">
-          <input className="toggle" type="checkbox" />
+          <input
+            className="toggle"
+            type="checkbox"
+            onClick={onToggleCompleted}
+          />
           <label>
             <span className="description">{label}</span>
             <span className="created">{created}</span>
           </label>
-          <button className="icon icon-edit"></button>
-          <button onClick={onDelete} className="icon icon-destroy"></button>
+          <button
+            className="icon icon-edit"
+            onClick={this.handleToggleEditing}
+          ></button>
+          <button className="icon icon-destroy" onClick={onDelete}></button>
         </div>
+        {editing && (
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="text"
+              className="edit"
+              value={value}
+              onChange={this.handleChange}
+              onBlur={this.handleSubmit}
+            />
+          </form>
+        )}
       </li>
     );
   }
@@ -39,4 +91,6 @@ Task.propTypes = {
   onToggleCompleted: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   created: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
+  editItem: PropTypes.func.isRequired,
 };

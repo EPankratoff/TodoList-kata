@@ -18,6 +18,7 @@ export default class App extends Component {
   createTaskItem(label) {
     return {
       label,
+      editing: false,
       completed: false,
       id: this.maxId++,
     };
@@ -72,6 +73,15 @@ export default class App extends Component {
     });
   };
 
+  editItem(id, text) {
+    this.setState((prevState) => ({
+      taskData: prevState.taskData.map((element) => {
+        if (element.id === id) element.label = text;
+        return element;
+      }),
+    }));
+  }
+
   clearCompleted = () => {
     this.setState(({ taskData }) => {
       const newArray = taskData.filter((el) => !el.completed);
@@ -80,13 +90,6 @@ export default class App extends Component {
       };
     });
   };
-
-  // toggleProperty(arr, id, propName) {
-  //   const indx = arr.findIndex((el) => el.id === id);
-  //   const oldItem = arr[indx];
-  //   const newItem = { ...oldItem, [propName]: !oldItem[propName] };
-  //   return [...arr.slice(0, indx), newItem, ...arr.slice(indx + 1)];
-  // }
 
   onToggleCompleted = (id) => {
     this.setState(({ taskData }) => {
@@ -114,6 +117,7 @@ export default class App extends Component {
 
         <section className="main">
           <TaskList
+            editItem={(id, value) => this.editItem(id, value)}
             tasks={this.filteredItems()}
             onDelete={this.deleteItem}
             onToggleCompleted={this.onToggleCompleted}
