@@ -24,3 +24,11 @@ export default class Task extends Component {
     );
   }
 }
+
+Task.defaultProps = {
+  label: "",
+  onDelete: () => {},
+  onToggleCompleted: () => {},
+  created: "",
+  completed: false,
+};

@@ -36,3 +36,8 @@ export default class TaskFilter extends Component {
     );
   }
 }
+
+TaskFilter.defaultProps = {
+  filter: "All",
+  onFilterChange: () => {},
+};

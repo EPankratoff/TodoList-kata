@@ -16,3 +16,10 @@ export default class Footer extends Component {
     );
   }
 }
+
+Footer.defaultProps = {
+  taskCount: 0,
+  filter: "All",
+  clearCompleted: () => {},
+  onFilterChange: () => {},
+};
