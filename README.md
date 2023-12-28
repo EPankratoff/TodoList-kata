@@ -1,4 +1,4 @@
-# Перейдите по  [ссылке](https://todo-list-kata-8lj7wi5e5-evgenys-projects-a9d8371f.vercel.app/) на сайт.
+# Перейдите по  [ссылке](https://todo-list-kata-psi.vercel.app/) на сайт.
 
 # Getting Started with Create React App
 
