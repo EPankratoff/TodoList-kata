@@ -15,7 +15,7 @@
   },
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "lint:fix": "eslint \"src/**/*.{js,jsx}\" --fix",
+    "lint:fix": "eslint \"src/**/*.{js,jsx}\" --fix --color",
     "format": "prettier . --write",
     "start": "react-scripts start",
     "build": "react-scripts build",
