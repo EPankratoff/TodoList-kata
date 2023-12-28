@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import './Footer.css'
 import PropTypes from 'prop-types'
 

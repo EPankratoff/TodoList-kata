@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-
 import './App.css'
 import { formatDistanceToNow } from 'date-fns'
+
 import Footer from './components/Footer/Footer'
 import NewTaskForm from './components/NewTaskForm'
 import TaskList from './components/TaskList/TaskList'

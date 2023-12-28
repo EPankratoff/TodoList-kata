@@ -1,3 +1,6 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable import/order */
+// eslint-disable-next-line prettier/prettier
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
