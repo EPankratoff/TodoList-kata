@@ -1,90 +1,83 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { formatDistanceToNow } from 'date-fns'
 
 export default class Task extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       editing: false,
       value: props.label,
-    };
+    }
 
-    this.handleToggleEditing = this.handleToggleEditing.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
+    this.handleToggleEditing = this.handleToggleEditing.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   handleToggleEditing() {
     this.setState((prevState) => ({
       editing: !prevState.editing,
-    }));
+    }))
   }
 
   handleSubmit(e) {
-    e.preventDefault();
-    const { editItem } = this.props;
-    editItem(this.state.value);
-    this.setState({ editing: false });
+    e.preventDefault()
+    const { editItem } = this.props
+    editItem(this.state.value)
+    this.setState({ editing: false })
   }
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ value: event.target.value })
   }
 
   render() {
-    const { label, created, onDelete, onToggleCompleted, completed } =
-      this.props;
-    const { editing, value } = this.state;
+    const { label, createdData, onDelete, onToggleCompleted, completed } = this.props
+    const { editing, value } = this.state
 
-    let classNames = "";
+    const timeDifference = formatDistanceToNow(createdData, {
+      addSuffix: true,
+      includeSeconds: true,
+    })
+
+    let classNames = ''
     if (completed) {
-      classNames += "completed";
+      classNames += 'completed'
     }
     if (editing) {
-      classNames += " editing";
+      classNames += ' editing'
     }
 
     return (
       <li className={classNames}>
         <div className="view">
-          <input
-            className="toggle"
-            type="checkbox"
-            onClick={onToggleCompleted}
-          />
+          <input className="toggle" type="checkbox" onClick={onToggleCompleted} />
           <label>
             <span className="description">{label}</span>
-            <span className="created">{created}</span>
+            <span className="created">{timeDifference}</span>
           </label>
-          <button
-            className="icon icon-edit"
-            onClick={this.handleToggleEditing}
-          ></button>
+          <button className="icon icon-edit" onClick={this.handleToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDelete}></button>
         </div>
         {editing && (
           <form onSubmit={this.handleSubmit}>
-            <input
-              type="text"
-              className="edit"
-              value={value}
-              onChange={this.handleChange}
-              onBlur={this.handleSubmit}
-            />
+            <input type="text" className="edit" value={value} onChange={this.handleChange} onBlur={this.handleSubmit} />
           </form>
         )}
       </li>
-    );
+    )
   }
 }
 
 Task.defaultProps = {
-  label: "",
+  label: '',
   onDelete: () => {},
   onToggleCompleted: () => {},
-  created: "",
+  created: '',
   completed: false,
-};
+  createdData: () => new Date(),
+}
 
 Task.propTypes = {
   onDelete: PropTypes.func.isRequired,
@@ -93,4 +86,5 @@ Task.propTypes = {
   created: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
   editItem: PropTypes.func.isRequired,
-};
+  createdData: PropTypes.func.isRequired,
+}

@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import "./newTaskForm.css";
+import React, { Component } from 'react'
+import './newTaskForm.css'
 
 export default class NewTaskForm extends Component {
   state = {
-    label: "",
-  };
+    label: '',
+  }
 
   onLabelChange = (e) => {
     this.setState({
       label: e.target.value,
-    });
-  };
+    })
+  }
 
   onSubmit = (e) => {
-    e.preventDefault();
-    this.props.onItemAdd(this.state.label);
+    e.preventDefault()
+    this.props.onItemAdd(this.state.label)
     this.setState({
-      label: "",
-    });
-  };
+      label: '',
+    })
+  }
   render() {
     return (
       <header className="header">
@@ -32,6 +32,6 @@ export default class NewTaskForm extends Component {
           />
         </form>
       </header>
-    );
+    )
   }
 }
