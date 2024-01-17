@@ -113,8 +113,7 @@ export default class App extends Component {
 
   render() {
     const { taskData, filter } = this.state
-    const completedCount = taskData.filter((el) => el.completed).length
-    // const filterItem = this.filter(taskData, filter);
+    const completedCount = taskData.filter((el) => !el.completed).length
 
     return (
       <div className="todoapp">

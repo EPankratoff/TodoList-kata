@@ -23,6 +23,10 @@ export default class Task extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
+
+    if (this.state.value.trim() === '') {
+      return
+    }
     const { editItem } = this.props
     editItem(this.state.value)
     this.setState({ editing: false })
