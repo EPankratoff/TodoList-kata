@@ -10,17 +10,19 @@ export default class App extends Component {
   maxId = 100
   state = {
     taskData: [
-      this.createTaskItem('Completed task'),
-      this.createTaskItem('Active task'),
-      this.createTaskItem('Drink Coffee'),
+      this.createTaskItem('Completed task', 10, 5),
+      this.createTaskItem('Active task', 12, 1),
+      this.createTaskItem('Drink Coffee', 1, 4),
     ],
     filter: 'All',
   }
 
-  createTaskItem(label) {
+  createTaskItem(label, min, sec) {
     const createdData = new Date()
     return {
       label,
+      min,
+      sec,
       createdData,
       editing: false,
       completed: false,
@@ -55,8 +57,8 @@ export default class App extends Component {
     })
   }
 
-  addItem = (text) => {
-    const newItem = this.createTaskItem(text)
+  addItem = (text, min, sec) => {
+    const newItem = this.createTaskItem(text, min, sec)
 
     this.setState(({ taskData }) => {
       const newArr = [...taskData, newItem]

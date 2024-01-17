@@ -37,7 +37,7 @@ export default class Task extends Component {
   }
 
   render() {
-    const { label, createdData, onDelete, onToggleCompleted, completed } = this.props
+    const { label, createdData, onDelete, onToggleCompleted, completed, min, sec } = this.props
     const { editing, value } = this.state
 
     const timeDifference = formatDistanceToNow(createdData, {
@@ -58,8 +58,15 @@ export default class Task extends Component {
         <div className="view">
           <input className="toggle" type="checkbox" onClick={onToggleCompleted} />
           <label>
-            <span className="description">{label}</span>
-            <span className="created">{timeDifference}</span>
+            <span className="title">{label}</span>
+            <span className="description">
+              <button className="icon icon-play"></button>
+              <button className="icon icon-pause"></button>
+              <span className="timer">
+                {min}:{sec}
+              </span>
+            </span>
+            <span className="created description">{timeDifference}</span>
           </label>
           <button className="icon icon-edit" onClick={this.handleToggleEditing}></button>
           <button className="icon icon-destroy" onClick={onDelete}></button>
