@@ -10,7 +10,7 @@ export default class App extends Component {
   maxId = 100
   state = {
     taskData: [
-      this.createTaskItem('Completed task', 10, 5),
+      this.createTaskItem('Completed task', 120, 120),
       this.createTaskItem('Active task', 12, 1),
       this.createTaskItem('Drink Coffee', 1, 4),
     ],

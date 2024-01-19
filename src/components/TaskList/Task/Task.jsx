@@ -8,11 +8,15 @@ export default class Task extends Component {
     this.state = {
       editing: false,
       value: props.label,
+      timer: 0,
+      timerValue: 12,
     }
 
     this.handleToggleEditing = this.handleToggleEditing.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleStartTimer = this.handleStartTimer.bind(this)
+    this.startTimer = this.startTimer.bind(this)
   }
 
   handleToggleEditing() {
@@ -36,8 +40,44 @@ export default class Task extends Component {
     this.setState({ value: event.target.value })
   }
 
+  startTimer() {
+    this.setState(({ timerValue }) => {
+      if (timerValue !== 0) {
+        let newTimerValue = timerValue - 1
+        return {
+          timerValue: newTimerValue,
+        }
+      }
+      this.setState({
+        timer: 0,
+      })
+      return clearTimeout(this.timer)
+    })
+    this.timer - setTimeout(this.startTimer, 1000)
+  }
+
+  handleStartTimer() {
+    const { timer } = this.state
+
+    if (timer) {
+      return
+    }
+    this.setState({
+      timer: 1,
+    })
+    setTimeout(this.startTimer, 1000)
+  }
+
+  formatTimer() {
+    // const { timerValue } = this.state
+    const { min, sec } = this.props
+    const minutes = String(Math.floor(min)).padStart(2, '0')
+    const seconds = String(Math.floor(sec)).padStart(2, '0')
+    return `${minutes}:${seconds}`
+  }
+
   render() {
-    const { label, createdData, onDelete, onToggleCompleted, completed, min, sec } = this.props
+    const { label, createdData, onDelete, onToggleCompleted, completed } = this.props
     const { editing, value } = this.state
 
     const timeDifference = formatDistanceToNow(createdData, {
@@ -60,11 +100,9 @@ export default class Task extends Component {
           <label>
             <span className="title">{label}</span>
             <span className="description">
-              <button className="icon icon-play"></button>
+              <button className="icon icon-play" onClick={this.handleStartTimer}></button>
               <button className="icon icon-pause"></button>
-              <span className="timer">
-                {min}:{sec}
-              </span>
+              <span className="timer">{this.formatTimer()}</span>
             </span>
             <span className="created description">{timeDifference}</span>
           </label>
