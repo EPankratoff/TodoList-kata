@@ -294,6 +294,10 @@ body {
   margin-left: 10px;
 }
 
+.hidden {
+  display: none;
+}
+
 .todo-list li .icon-edit {
   position: absolute;
   top: 0;
