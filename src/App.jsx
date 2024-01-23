@@ -10,27 +10,35 @@ export default class App extends Component {
   maxId = 100
   state = {
     taskData: [
-      this.createTaskItem('Completed task', 120, 120),
+      this.createTaskItem('Completed task', 10, 0),
       this.createTaskItem('Active task', 12, 1),
       this.createTaskItem('Drink Coffee', 1, 4),
     ],
     filter: 'All',
+    timers: {},
   }
 
   createTaskItem(label, min, sec) {
     const createdData = new Date()
+    const id = this.maxId++
+    const timerKey = `timer_${id}`
+
+    const timerValue = min * 60 + sec
+
     return {
+      id,
       label,
       min,
       sec,
       createdData,
       editing: false,
       completed: false,
-      id: this.maxId++,
       created: formatDistanceToNow(createdData, {
         addSuffix: true,
         includeSeconds: true,
       }),
+      timerValue,
+      timerKey,
     }
   }
 
@@ -113,8 +121,17 @@ export default class App extends Component {
     })
   }
 
+  handleTimerUpdate = (timerKey, newTimer) => {
+    this.setState((prevState) => ({
+      timers: {
+        ...prevState.timers,
+        [timerKey]: newTimer,
+      },
+    }))
+  }
+
   render() {
-    const { taskData, filter } = this.state
+    const { taskData, filter, timers } = this.state
     const completedCount = taskData.filter((el) => !el.completed).length
 
     return (
@@ -127,6 +144,10 @@ export default class App extends Component {
             tasks={this.filteredItems()}
             onDelete={this.deleteItem}
             onToggleCompleted={this.onToggleCompleted}
+            timers={timers}
+            filterState={filter}
+            taskData={taskData}
+            onTimerUpdate={this.handleTimerUpdate}
           />
           <Footer
             filter={filter}

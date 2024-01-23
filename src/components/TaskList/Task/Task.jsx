@@ -8,8 +8,8 @@ export default class Task extends Component {
     this.state = {
       editing: false,
       value: props.label,
-      timer: 0,
-      timerValue: 12,
+      timerValue: props.timerValue,
+      timerRunning: false,
     }
 
     this.handleToggleEditing = this.handleToggleEditing.bind(this)
@@ -17,6 +17,37 @@ export default class Task extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleStartTimer = this.handleStartTimer.bind(this)
     this.startTimer = this.startTimer.bind(this)
+    this.pauseTimer = this.pauseTimer.bind(this)
+  }
+
+  componentDidMount() {
+    if (this.state.timerValue === 0 && this.props.min > 0) {
+      this.setState({
+        timerValue: this.props.min * 60 + this.props.sec,
+      })
+    }
+
+    if (this.props.timerRunning && this.state.timerValue > 0) {
+      this.startTimer()
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.completed !== prevProps.completed) {
+      if (this.props.completed) {
+        this.pauseTimer()
+      }
+    }
+
+    if (this.props.timerRunning && this.props.activeTab === 'Active') {
+      this.setState({
+        timerValue: this.props.timerValue,
+        timerRunning: this.props.timerRunning,
+      })
+    }
+  }
+  componentWillUnmount() {
+    this.pauseTimer()
   }
 
   handleToggleEditing() {
@@ -40,45 +71,48 @@ export default class Task extends Component {
     this.setState({ value: event.target.value })
   }
 
-  startTimer() {
-    this.setState(({ timerValue }) => {
-      if (timerValue !== 0) {
-        let newTimerValue = timerValue - 1
-        return {
-          timerValue: newTimerValue,
+  startTimer = () => {
+    this.setState(
+      ({ timerValue }) => ({
+        timerValue: timerValue > 0 ? timerValue - 1 : 0,
+      }),
+      () => {
+        if (this.state.timerRunning && this.state.timerValue > 0) {
+          setTimeout(this.startTimer, 1000)
         }
       }
-      this.setState({
-        timer: 0,
-      })
-      return clearTimeout(this.timer)
-    })
-    this.timer - setTimeout(this.startTimer, 1000)
+    )
   }
 
   handleStartTimer() {
-    const { timer } = this.state
+    const { timerRunning, timerValue } = this.state
 
-    if (timer) {
-      return
+    if (!timerRunning && timerValue > 0) {
+      this.setState({
+        timerRunning: true,
+      })
+      setTimeout(this.startTimer, 1000)
+    } else {
+      this.pauseTimer()
     }
+  }
+
+  pauseTimer() {
     this.setState({
-      timer: 1,
+      timerRunning: false,
     })
-    setTimeout(this.startTimer, 1000)
   }
 
   formatTimer() {
-    // const { timerValue } = this.state
-    const { min, sec } = this.props
-    const minutes = String(Math.floor(min)).padStart(2, '0')
-    const seconds = String(Math.floor(sec)).padStart(2, '0')
+    const { timerValue } = this.state
+    const minutes = String(Math.floor(timerValue / 60)).padStart(2, '0')
+    const seconds = String(timerValue % 60).padStart(2, '0')
     return `${minutes}:${seconds}`
   }
 
   render() {
     const { label, createdData, onDelete, onToggleCompleted, completed } = this.props
-    const { editing, value } = this.state
+    const { editing, value, timerRunning } = this.state
 
     const timeDifference = formatDistanceToNow(createdData, {
       addSuffix: true,
@@ -100,8 +134,8 @@ export default class Task extends Component {
           <label>
             <span className="title">{label}</span>
             <span className="description">
-              <button className="icon icon-play" onClick={this.handleStartTimer}></button>
-              <button className="icon icon-pause"></button>
+              <button className="icon icon-play" onClick={this.handleStartTimer} disabled={timerRunning}></button>
+              <button className="icon icon-pause" onClick={this.pauseTimer} disabled={!timerRunning}></button>
               <span className="timer">{this.formatTimer()}</span>
             </span>
             <span className="created description">{timeDifference}</span>
@@ -135,5 +169,8 @@ Task.propTypes = {
   created: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
   editItem: PropTypes.func.isRequired,
-  createdData: PropTypes.func.isRequired,
+  min: PropTypes.number.isRequired,
+  sec: PropTypes.number.isRequired,
+  timerValue: PropTypes.number.isRequired,
+  timerRunning: PropTypes.bool.isRequired,
 }
