@@ -15,15 +15,11 @@ export default class App extends Component {
       this.createTaskItem('Drink Coffee', 1, 4),
     ],
     filter: 'All',
-    timers: {},
   }
 
   createTaskItem(label, min, sec) {
     const createdData = new Date()
     const id = this.maxId++
-    const timerKey = `timer_${id}`
-
-    const timerValue = min * 60 + sec
 
     return {
       id,
@@ -37,9 +33,53 @@ export default class App extends Component {
         addSuffix: true,
         includeSeconds: true,
       }),
-      timerValue,
-      timerKey,
     }
+  }
+
+  startTimer = (id) => {
+    this.setState((prevState) => {
+      const updatedTaskData = prevState.taskData.map((task) => {
+        if (task.id === id && !task.timerRunning) {
+          const intervalId = setInterval(() => {
+            this.setState((prevState) => {
+              const updatedData = prevState.taskData.map((t) => {
+                if (t.id === id) {
+                  if (t.sec > 0) {
+                    t.sec -= 1
+                  } else if (t.min > 0) {
+                    t.sec = 59
+                    t.min -= 1
+                  } else {
+                    clearInterval(t.intervalId)
+                    t.timerRunning = false
+                  }
+                }
+                return t
+              })
+              return { taskData: updatedData }
+            })
+          }, 1000)
+
+          return { ...task, timerRunning: true, intervalId }
+        }
+        return task
+      })
+
+      return { taskData: updatedTaskData }
+    })
+  }
+
+  stopTimer = (id) => {
+    this.setState(({ taskData }) => {
+      const newArray = taskData.map((task) => {
+        if (task.id === id && task.timerRunning) {
+          clearInterval(task.intervalId)
+          task.timerRunning = false
+        }
+        return task
+      })
+      return { taskData: newArray }
+    })
   }
 
   filter(items, filter) {
@@ -121,17 +161,8 @@ export default class App extends Component {
     })
   }
 
-  handleTimerUpdate = (timerKey, newTimer) => {
-    this.setState((prevState) => ({
-      timers: {
-        ...prevState.timers,
-        [timerKey]: newTimer,
-      },
-    }))
-  }
-
   render() {
-    const { taskData, filter, timers } = this.state
+    const { taskData, filter } = this.state
     const completedCount = taskData.filter((el) => !el.completed).length
 
     return (
@@ -144,10 +175,9 @@ export default class App extends Component {
             tasks={this.filteredItems()}
             onDelete={this.deleteItem}
             onToggleCompleted={this.onToggleCompleted}
-            timers={timers}
-            filterState={filter}
             taskData={taskData}
-            onTimerUpdate={this.handleTimerUpdate}
+            startTimer={this.startTimer}
+            stopTimer={this.stopTimer}
           />
           <Footer
             filter={filter}

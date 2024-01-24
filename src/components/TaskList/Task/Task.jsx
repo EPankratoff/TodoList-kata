@@ -8,46 +8,24 @@ export default class Task extends Component {
     this.state = {
       editing: false,
       value: props.label,
-      timerValue: props.timerValue,
-      timerRunning: false,
     }
 
     this.handleToggleEditing = this.handleToggleEditing.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
-    this.handleStartTimer = this.handleStartTimer.bind(this)
-    this.startTimer = this.startTimer.bind(this)
-    this.pauseTimer = this.pauseTimer.bind(this)
-  }
-
-  componentDidMount() {
-    if (this.state.timerValue === 0 && this.props.min > 0) {
-      this.setState({
-        timerValue: this.props.min * 60 + this.props.sec,
-      })
-    }
-
-    if (this.props.timerRunning && this.state.timerValue > 0) {
-      this.startTimer()
-    }
+    this.handlePlayTimer = this.handlePlayTimer.bind(this)
+    this.handleStopTimer = this.handleStopTimer.bind(this)
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.completed !== prevProps.completed) {
-      if (this.props.completed) {
-        this.pauseTimer()
-      }
-    }
-
-    if (this.props.timerRunning && this.props.activeTab === 'Active') {
-      this.setState({
-        timerValue: this.props.timerValue,
-        timerRunning: this.props.timerRunning,
-      })
+      this.props.stopTimer(this.props.id)
     }
   }
   componentWillUnmount() {
-    this.pauseTimer()
+    if (this.props.completed) {
+      this.props.stopTimer(this.props.id)
+    }
   }
 
   handleToggleEditing() {
@@ -70,49 +48,16 @@ export default class Task extends Component {
   handleChange(event) {
     this.setState({ value: event.target.value })
   }
-
-  startTimer = () => {
-    this.setState(
-      ({ timerValue }) => ({
-        timerValue: timerValue > 0 ? timerValue - 1 : 0,
-      }),
-      () => {
-        if (this.state.timerRunning && this.state.timerValue > 0) {
-          setTimeout(this.startTimer, 1000)
-        }
-      }
-    )
+  handlePlayTimer = () => {
+    this.props.startTimer(this.props.id)
   }
-
-  handleStartTimer() {
-    const { timerRunning, timerValue } = this.state
-
-    if (!timerRunning && timerValue > 0) {
-      this.setState({
-        timerRunning: true,
-      })
-      setTimeout(this.startTimer, 1000)
-    } else {
-      this.pauseTimer()
-    }
-  }
-
-  pauseTimer() {
-    this.setState({
-      timerRunning: false,
-    })
-  }
-
-  formatTimer() {
-    const { timerValue } = this.state
-    const minutes = String(Math.floor(timerValue / 60)).padStart(2, '0')
-    const seconds = String(timerValue % 60).padStart(2, '0')
-    return `${minutes}:${seconds}`
+  handleStopTimer = () => {
+    this.props.stopTimer(this.props.id)
   }
 
   render() {
-    const { label, createdData, onDelete, onToggleCompleted, completed } = this.props
-    const { editing, value, timerRunning } = this.state
+    const { label, createdData, onDelete, onToggleCompleted, completed, min, sec } = this.props
+    const { editing, value } = this.state
 
     const timeDifference = formatDistanceToNow(createdData, {
       addSuffix: true,
@@ -134,9 +79,11 @@ export default class Task extends Component {
           <label>
             <span className="title">{label}</span>
             <span className="description">
-              <button className="icon icon-play" onClick={this.handleStartTimer} disabled={timerRunning}></button>
-              <button className="icon icon-pause" onClick={this.pauseTimer} disabled={!timerRunning}></button>
-              <span className="timer">{this.formatTimer()}</span>
+              <button className="icon icon-play" onClick={this.handlePlayTimer}></button>
+              <button className="icon icon-pause" onClick={this.handleStopTimer}></button>
+              <span className="timer">
+                {min}:{sec}
+              </span>
             </span>
             <span className="created description">{timeDifference}</span>
           </label>
@@ -160,6 +107,7 @@ Task.defaultProps = {
   created: '',
   completed: false,
   createdData: () => new Date(),
+  id: 0,
 }
 
 Task.propTypes = {
@@ -167,10 +115,8 @@ Task.propTypes = {
   onToggleCompleted: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   created: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
   editItem: PropTypes.func.isRequired,
   min: PropTypes.number.isRequired,
   sec: PropTypes.number.isRequired,
-  timerValue: PropTypes.number.isRequired,
-  timerRunning: PropTypes.bool.isRequired,
+  id: PropTypes.number.isRequired,
 }
