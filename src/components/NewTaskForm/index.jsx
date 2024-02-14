@@ -1,94 +1,79 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import './newTaskForm.css'
 
-export default class NewTaskForm extends Component {
-  state = {
-    label: '',
-    minutes: '',
-    seconds: '',
+const NewTaskForm = ({ onItemAdd }) => {
+  const [label, setLabel] = useState('')
+  const [minutes, setMinutes] = useState('')
+  const [seconds, setSeconds] = useState('')
+
+  const onLabelChange = (e) => {
+    setLabel(e.target.value)
   }
 
-  onLabelChange = (e) => {
-    this.setState({
-      label: e.target.value,
-    })
-  }
-
-  onMinChange = (e) => {
+  const onMinChange = (e) => {
     if (e.target.value > 60 || e.target.value < 0) {
       return
     }
-    this.setState({
-      minutes: e.target.value,
-    })
+    setMinutes(e.target.value)
   }
 
-  onSecChange = (e) => {
+  const onSecChange = (e) => {
     if (e.target.value > 60 || e.target.value < 0) {
       return
     }
-    this.setState({
-      seconds: e.target.value,
-    })
+    setSeconds(e.target.value)
   }
 
-  onKeyDown = (event) => {
+  const onKeyDown = (event) => {
     if (event.key === 'Enter') {
-      this.onSubmit()
+      onSubmit()
       event.preventDefault()
     }
   }
 
-  onSubmit = () => {
-    const { label, minutes, seconds } = this.state
-
+  const onSubmit = () => {
     if (label.trim() === '' || minutes.trim() === '' || seconds.trim() === '') {
       return
     } else if (isNaN(minutes) || isNaN(seconds)) {
-      this.setState({
-        label: '',
-        minutes: '',
-        seconds: '',
-      })
+      setLabel('')
+      setMinutes('')
+      setSeconds('')
     } else {
-      this.props.onItemAdd(label, Number(minutes), Number(seconds))
+      onItemAdd(label, Number(minutes), Number(seconds))
 
-      this.setState({
-        label: '',
-        minutes: '',
-        seconds: '',
-      })
+      setLabel('')
+      setMinutes('')
+      setSeconds('')
     }
   }
-  render() {
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form className="new-todo-form">
-          <input
-            className="new-todo"
-            placeholder="What needs to be done?"
-            onChange={this.onLabelChange}
-            onKeyDown={this.onKeyDown}
-            value={this.state.label}
-          />
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form className="new-todo-form">
+        <input
+          className="new-todo"
+          placeholder="What needs to be done?"
+          onChange={onLabelChange}
+          onKeyDown={onKeyDown}
+          value={label}
+        />
 
-          <input
-            className="new-todo-form__timer"
-            placeholder="Min"
-            onChange={this.onMinChange}
-            onKeyDown={this.onKeyDown}
-            value={this.state.minutes}
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Sec"
-            onChange={this.onSecChange}
-            value={this.state.seconds}
-            onKeyDown={this.onKeyDown}
-          />
-        </form>
-      </header>
-    )
-  }
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          onChange={onMinChange}
+          onKeyDown={onKeyDown}
+          value={minutes}
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          onChange={onSecChange}
+          value={seconds}
+          onKeyDown={onKeyDown}
+        />
+      </form>
+    </header>
+  )
 }
+export default NewTaskForm
